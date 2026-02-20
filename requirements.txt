@@ -1,0 +1,6 @@
+flask
+flask-sqlalchemy
+flask-caching
+psycopg2-binary
+redis
+gunicorn
