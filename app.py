@@ -42,7 +42,7 @@ def get_items():
 
 @app.route('/items/<int:id>', methods=['DELETE'])
 def delete_item(id):
-    db.session.get(Item, id)
+    item = db.session.get(Item, id)
     db.session.delete(item)
     db.session.commit()
     cache.clear()
