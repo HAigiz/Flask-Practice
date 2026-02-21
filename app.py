@@ -31,11 +31,11 @@ def create_item():
     new_item = Item(name=data['name'])
     db.session.add(new_item)
     db.session.commit()
-    cache.clear() # Очищаем кеш при изменении данных
+    cache.clear() 
     return jsonify({"id": new_item.id, "name": new_item.name}), 201
 
 @app.route('/items', methods=['GET'])
-@cache.cached(timeout=60) # Кешируем результат на 60 секунд
+@cache.cached(timeout=60)
 def get_items():
     items = Item.query.all()
     return jsonify([{"id": i.id, "name": i.name} for i in items])
@@ -47,6 +47,19 @@ def delete_item(id):
     db.session.commit()
     cache.clear()
     return '', 204
+
+@app.route('/items/<int:id>', methods=['PUT'])
+def update_item(id):
+    item = db.session.get(Item, id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+    
+    data = request.json
+    item.name = data.get('name', item.name)
+    
+    db.session.commit()
+    cache.clear()  # Сбрасываем кеш, чтобы GET эндпоинт обновился
+    return jsonify({"id": item.id, "name": item.name})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
